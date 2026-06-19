@@ -1,0 +1,232 @@
+USE APRILPYTHON;
+
+SELECT * FROM DEPARTMENT;
+SELECT * FROM EMPLOYEE;
+DROP TABLE STUDENT;
+CREATE TABLE Student (
+    student_id INT,
+    student_name VARCHAR(50),
+    age INT,
+    course VARCHAR(50),
+    city VARCHAR(50)
+);
+
+
+INSERT INTO Student VALUES
+(1,'Rahul',20,'BCA','Pune'),
+(2,'Anita',21,'BBA','Mumbai'),
+(3,'Vikas',19,'BSc','Delhi'),
+(4,'Priya',22,'BCA','Chennai'),
+(5,'Amit',20,'BCom','Nagpur'),
+(6,'Sneha',21,'BCA','Pune'),
+(7,'Rohan',23,'MBA','Mumbai'),
+(8,'Kavita',20,'BSc','Delhi'),
+(9,'Arjun',22,'BBA','Hyderabad'),
+(10,'Neha',19,'BCA','Bangalore');
+
+SELECT * FROM STUDENT;
+
+-- SUBQUERY EXAMPLES
+
+-- 1.Employees who work in the IT Department.
+-- INNER QUERY
+SELECT DEPT_ID FROM DEPARTMENT WHERE DEPT_NAME="IT";
+-- ANS
+SELECT FIRST_NAME, LAST_NAME,DEPT_ID FROM EMPLOYEE 
+WHERE DEPT_ID=(SELECT DEPT_ID FROM DEPARTMENT WHERE DEPT_NAME="IT");
+
+-- 2.Employees earning more than the average salary
+-- INNER QUERY
+SELECT AVG(SALARY) FROM EMPLOYEE;
+-- ANS
+SELECT FIRST_NAME, LAST_NAME, DEPT_ID FROM EMPLOYEE 
+WHERE SALARY>(SELECT AVG(SALARY) FROM EMPLOYEE);
+
+-- 3.Employees working in the same department as John
+-- INNER QUERY
+SELECT DEPT_ID FROM EMPLOYEE WHERE FIRST_NAME="JOHN";
+-- ANS
+SELECT FIRST_NAME, LAST_NAME, DEPT_ID FROM EMPLOYEE
+WHERE DEPT_ID=(SELECT DEPT_ID FROM EMPLOYEE WHERE FIRST_NAME="JOHN");
+
+-- 4.Employee with the highest salary
+-- INNER QUERY
+SELECT MAX(SALARY) FROM EMPLOYEE;
+-- ANS
+ SELECT FIRST_NAME, LAST_NAME, DEPT_ID FROM employee
+ WHERE SALARY=(SELECT MAX(SALARY) FROM EMPLOYEE);
+
+-- 5.Departments where salary greater than 80000 exists
+-- INNER QUERY
+SELECT DEPT_ID FROM EMPLOYEE WHERE SALARY>80000;
+-- ANS
+SELECT DEPT_NAME FROM department
+WHERE DEPT_ID IN(SELECT DEPT_ID FROM EMPLOYEE WHERE SALARY>80000);
+
+-- 6.Departments that do not have employees
+-- INNER QUERY
+SELECT DEPT_ID FROM EMPLOYEE;
+SELECT DEPT_NAME FROM DEPARTMENT WHERE DEPT_ID NOT IN(SELECT DEPT_ID FROM EMPLOYEE);
+
+-- 7.Customers who placed orders
+-- INNER QUERY 
+SELECT CUSTOMER_ID FROM ORDERS;
+-- ANS
+SELECT CUSTOMER_ID, CUSTOMER_NAME FROM CUSTOMER
+WHERE CUSTOMER_ID IN(SELECT CUSTOMER_ID FROM ORDERS);
+
+-- 8.Customers who did NOT place any orders
+-- INNER QUERY 
+SELECT CUSTOMER_ID FROM ORDERS;
+-- ANS
+SELECT CUSTOMER_ID, CUSTOMER_NAME FROM CUSTOMER
+WHERE CUSTOMER_ID NOT IN(SELECT CUSTOMER_ID FROM ORDERS);
+
+                -- SUBQUERY(STUDENT TABLE) --
+SELECT * FROM STUDENT;
+-- 1.Subquery in WHERE (Students older than average age)
+-- INNER JOIN
+SELECT AVG(AGE) FROM STUDENT;
+-- ANS
+SELECT STUDENT_NAME, AGE FROM student
+WHERE AGE>(SELECT  AVG(AGE) FROM STUDENT);
+
+-- 2.Students from the same city as 'Rahul'
+-- INNER QUERY
+SELECT CITY FROM STUDENT WHERE STUDENT_NAME="RAHUL";
+-- ANS
+SELECT STUDENT_NAME, CITY FROM STUDENT
+WHERE CITY=(SELECT CITY FROM STUDENT WHERE STUDENT_NAME="RAHUL");
+
+-- 3. Students with maximum age
+-- INNER QUERY
+SELECT MAX(AGE) FROM STUDENT;
+-- ANS
+SELECT STUDENT_NAME FROM STUDENT
+WHERE AGE=(SELECT MAX(AGE) FROM STUDENT);
+
+-- 4.Students studying the same course as 'Neha'
+-- INNER QUERY
+SELECT COURSE FROM STUDENT WHERE STUDENT_NAME="NEHA";
+-- ANS
+SELECT STUDENT_NAME FROM STUDENT 
+WHERE COURSE=(SELECT COURSE FROM STUDENT WHERE STUDENT_NAME="NEHA");
+
+-- 4.Students whose age is equal to minimum age
+-- INNER QUERY
+SELECT MIN(AGE) FROM STUDENT;
+-- ANS
+SELECT STUDENT_NAME FROM STUDENT
+WHERE AGE=(SELECT MIN(AGE) FROM STUDENT);
+-- 5.Subquery with IN (Students from cities that have BCA students)
+-- INNER QUERY
+SELECT CITY FROM STUDENT WHERE COURSE="BCA" ;
+-- ANS
+SELECT STUDENT_NAME, CITY FROM STUDENT
+WHERE CITY IN(SELECT CITY FROM STUDENT WHERE COURSE="BCA");
+
+			-- SUBQUERY QUESTIONS ON PRODUCT TABLE 
+SELECT * FROM PRODUCT;
+
+-- 1.products whose price is greater than the average price.
+-- INNER QUERY
+SELECT AVG(PRICE) FROM PRODUCT;
+-- ANS
+SELECT PRODUCTNAME,PRICE FROM PRODUCT
+WHERE PRICE>(SELECT AVG(PRICE) FROM PRODUCT);
+
+-- 2.Find the most expensive product.
+-- INNER QUERY
+SELECT MAX(PRICE) FROM PRODUCT;
+-- ANS
+SELECT PRODUCTNAME, PRICE FROM product
+WHERE PRICE=(SELECT MAX(PRICE) FROM PRODUCT);
+
+-- 3.Find the cheapest product.
+-- INNER QUERY
+SELECT MIN(PRICE) FROM PRODUCT;
+-- ANS
+SELECT PRODUCTNAME, PRICE FROM product
+WHERE PRICE=(SELECT MIN(PRICE) FROM PRODUCT);
+
+-- 4.Find products having stock greater than average stock.
+-- INNER QUERY
+SELECT AVG(QUANTITYINSTOCK) FROM PRODUCT;
+-- ANS
+SELECT PRODUCTNAME, QUANTITYINSTOCK FROM product
+WHERE QuantityInStock>(SELECT AVG(QUANTITYINSTOCK) FROM PRODUCT);
+
+-- 5.Find products from the same category as Smartphone.
+SELECT CATEGORY FROM PRODUCT WHERE PRODUCTNAME="SMARTPHONE";
+-- ANS
+SELECT PRODUCTNAME, CATEGORY FROM PRODUCT 
+WHERE CATEGORY=(SELECT CATEGORY FROM PRODUCT WHERE PRODUCTNAME="SMARTPHONE");
+
+-- 6.Find products costing more than the price of Keyboard.
+-- INNER QUERY
+SELECT PRICE FROM PRODUCT WHERE PRODUCTNAME="KEYBOARD";
+-- ANS
+SELECT PRODUCTNAME, PRICE FROM product
+WHERE PRICE> (SELECT PRICE FROM PRODUCT WHERE PRODUCTNAME="KEYBOARD");
+
+-- 7.Find products with stock less than the stock of Smartphone.
+-- INNER QUERY
+SELECT QUANTITYINSTOCK FROM PRODUCT WHERE PRODUCTNAME="SMARTPHONE";
+-- ANS
+SELECT PRODUCTNAME, QUANTITYINSTOCK FROM product
+WHERE QUANTITYINSTOCK<(SELECT QUANTITYINSTOCK FROM PRODUCT WHERE PRODUCTNAME="SMARTPHONE");
+
+-- 8.Find the second most expensive product.
+-- INNER QUERY-1
+SELECT MAX(PRICE) FROM PRODUCT;
+-- INNER QUERY-2
+SELECT MAX(PRICE) FROM PRODUCT WHERE PRICE<(SELECT MAX(PRICE) FROM PRODUCT);
+-- ANS
+SELECT PRODUCTNAME, PRICE FROM PRODUCT WHERE PRICE=(SELECT MAX(PRICE) FROM PRODUCT 
+WHERE PRICE <(SELECT MAX(PRICE) FROM PRODUCT));
+
+
+-- 9.Find categories having more than one product.
+-- INNER QUERY
+SELECT CATEGORY FROM PRODUCT GROUP BY CATEGORY HAVING COUNT(*)>1;
+-- ANS
+SELECT CATEGORY FROM PRODUCT 
+WHERE CATEGORY IN (SELECT CATEGORY FROM PRODUCT GROUP BY CATEGORY HAVING COUNT(*)>1);
+
+-- 10.Find products belonging to categories whose average price is above ₹5000.
+-- INNER QUERY
+SELECT CATEGORY FROM PRODUCT GROUP BY CATEGORY HAVING AVG(PRICE)>5000;
+-- ANS
+SELECT PRODUCTNAME, CATEGORY, PRICE FROM PRODUCT
+WHERE CATEGORY IN(SELECT CATEGORY FROM PRODUCT GROUP BY CATEGORY HAVING AVG(PRICE)>5000);
+
+select * from customer;
+select * from orders;
+-- 1. Name of the customer who place the order
+-- Non-Correlated: inner part execute after outer query is executed.
+-- Inner Query
+select customer_id from orders;
+-- ANS
+select customer_id, customer_name from customer 
+where customer_id in(select customer_id from orders);
+
+-- correlated: outer part compare with inner part(outer part execute after inner part executed).
+select customer_id, customer_name  from customer c
+where customer_id in(select CUSTOMER_ID from orders o where c.customer_id=o.customer_id);
+
+-- 2. Name of the customer who have not place order
+-- Non-Correlated
+-- Inner Query
+select customer_id from orders;
+-- ANS
+select customer_id, customer_name from customer 
+where customer_id not in(select customer_id from orders);
+
+-- Correlated
+select customer_id, customer_name  from customer c
+where customer_id NOT in(select CUSTOMER_ID from orders o where c.customer_id=o.customer_id);
+
+
+
+
+
